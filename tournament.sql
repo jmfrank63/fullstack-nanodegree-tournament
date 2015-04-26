@@ -7,6 +7,6 @@
 -- these lines here.
 
 -- DROP DATABASE IF EXISTS tournament;
-CREATE TABLE player;
-CREATE TABLE matches;
+CREATE TABLE player ();
+CREATE TABLE matches ();
 
