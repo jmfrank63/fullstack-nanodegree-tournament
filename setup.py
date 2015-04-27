@@ -3,7 +3,7 @@ import os
 
 # constants
 DB_NAME = 'tournament'
-SQL_QUERIES = 'tournament.sql'
+SQL_QUERIES = 'sql/tournament.sql'
 
 def create_db(db_name = DB_NAME):
     ''' Create a database deleting any previous versions

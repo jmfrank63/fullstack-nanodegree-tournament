@@ -1,0 +1,16 @@
+insert into players (name) values ('Amanda');
+insert into players (name) values ('Abigail');
+insert into players (name) values ('Amelia');
+insert into players (name) values ('Anastasia');
+insert into players (name) values ('Amy');
+insert into players (name) values ('Anne');
+insert into players (name) values ('Andrea');
+insert into players (name) values ('Amelie');
+insert into players (name) values ('Alida');
+insert into players (name) values ('Allison');
+insert into players (name) values ('Ariadne');
+insert into players (name) values ('Ada');
+insert into players (name) values ('Arabella');
+insert into players (name) values ('Aretha');
+insert into players (name) values ('Audrey');
+insert into players (name) values ('Ava');

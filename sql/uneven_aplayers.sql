@@ -1,0 +1,1 @@
+insert into players (name) values ('Ashley');
