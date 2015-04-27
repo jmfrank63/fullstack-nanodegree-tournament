@@ -68,7 +68,9 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    
+    connection = connect()
+    cursor = connection.cursor()
+    query = ''
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.

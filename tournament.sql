@@ -35,12 +35,12 @@ create table tournaments (id serial primary key,
                           );
 
 -- Create a matches table with players and matches and results                          
-create table matches (id integer references tournaments(id),
-                      match_number integer check (match_number > 0),
-                      opponent_1 integer references players(id),
-                      opponent_2 integer references players(id) 
-                          check (opponent_1 != opponent_2),
+create table matches (tournament_id integer references tournaments(id),
+                      match_id integer check (match_id > 0),
+                      player integer references players(id),
+                      opponent integer references players(id) 
+                          check (player != opponent),
                       result integer references results(result),
-                      primary key (id, match_number)
+                      primary key (tournament_id, match_id)
                       );
 

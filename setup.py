@@ -20,11 +20,11 @@ def create_db(db_name = DB_NAME):
     cursor.execute('END')
 
     # drop the database if it exists
-    cursor.execute('DROP DATABASE IF EXISTS ' + db_name)
+    cursor.execute('DROP DATABASE IF EXISTS {}'.format(db_name))
 
     # end any open transactions and create the database
     cursor.execute('END')
-    cursor.execute('CREATE DATABASE ' + db_name)
+    cursor.execute('CREATE DATABASE {}'.format(db_name))
 
     # commit any pending queries and close connection to standard database
     conn.commit()
@@ -33,7 +33,7 @@ def create_db(db_name = DB_NAME):
 def connect_db(db_name = DB_NAME):
     """Connects to a database and creates that database if it doesn't exist"""
     try:
-        conn = psycopg2.connect('dbname=' + db_name)
+        conn = psycopg2.connect('dbname={}'.format(db_name))
     except Exception, exp:
         raise exp
     return conn
