@@ -4,7 +4,7 @@
 #
 
 import psycopg2
-from setup import connect_db
+from support.setupdb import connect_db
 
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""

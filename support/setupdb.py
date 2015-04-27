@@ -3,7 +3,10 @@ import os
 
 # constants
 DB_NAME = 'tournament'
-SQL_QUERIES = 'sql/tournament.sql'
+TABLE_QUERIES = '../sql/tournament.sql'
+APLAYERS_QUERIES = '../sql/register_aplayers.sql'
+JPLAYERS_QUERIES = '../sql/register_jplayers.sql'
+
 
 def create_db(db_name = DB_NAME):
     ''' Create a database deleting any previous versions
@@ -50,12 +53,13 @@ def parse_queries(filename):
 
     return query_buffer.split(';')[:-1]
 
-def init_db(connection, queries):
+def execute_db(connection, queries):
     '''Fill a database with a table structure'''
     cursor = connection.cursor()
     for query in queries:
         cursor.execute(query)
     connection.commit()
+
 
 # open the sql commands file
 if __name__ == '__main__':
@@ -63,11 +67,12 @@ if __name__ == '__main__':
     create_db(DB_NAME)
     conn = connect_db(DB_NAME)
 
-    # create a list of queries
-    queries = parse_queries(SQL_QUERIES)
-
-    # send queries to database
-    init_db(conn, queries)
+    # create the table structure
+    execute_db(conn, parse_queries(TABLE_QUERIES))
+    
+    # fill database with players
+    execute_db(conn, parse_queries(APLAYERS_QUERIES))
+    execute_db(conn, parse_queries(JPLAYERS_QUERIES))
 
     # close the connection
     conn.close()

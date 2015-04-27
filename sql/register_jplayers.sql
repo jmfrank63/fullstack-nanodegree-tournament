@@ -1,3 +1,4 @@
+insert into players (name) values ('Jeff');
 insert into players (name) values ('Jim');
 insert into players (name) values ('Joe');
 insert into players (name) values ('John');
