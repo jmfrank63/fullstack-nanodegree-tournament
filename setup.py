@@ -5,7 +5,7 @@ import os
 DB_NAME = 'tournament'
 SQL_QUERIES = 'tournament.sql'
 
-def create_db(db_name):
+def create_db(db_name = DB_NAME):
     ''' Create a database deleting any previous versions
     Return a connection to the database
     '''
@@ -14,23 +14,23 @@ def create_db(db_name):
         conn = psycopg2.connect('dbname=postgres')
     except Exception, exp:
         raise exp
-    
+
     # create a cursor and end any transaction
     cursor = conn.cursor()
     cursor.execute('END')
-    
+
     # drop the database if it exists
     cursor.execute('DROP DATABASE IF EXISTS ' + db_name)
-    
+
     # end any open transactions and create the database
     cursor.execute('END')
     cursor.execute('CREATE DATABASE ' + db_name)
-    
+
     # commit any pending queries and close connection to standard database
     conn.commit()
     conn.close()
 
-def connect_db(db_name):
+def connect_db(db_name = DB_NAME):
     """Connects to a database and creates that database if it doesn't exist"""
     try:
         conn = psycopg2.connect('dbname=' + db_name)
@@ -56,18 +56,18 @@ def init_db(connection, queries):
     for query in queries:
         cursor.execute(query)
     connection.commit()
-    
+
 # open the sql commands file
 if __name__ == '__main__':
     # create a database deleting any previous versions and connect to it
     create_db(DB_NAME)
     conn = connect_db(DB_NAME)
-    
+
     # create a list of queries
     queries = parse_queries(SQL_QUERIES)
-    
+
     # send queries to database
     init_db(conn, queries)
-    
+
     # close the connection
     conn.close()
