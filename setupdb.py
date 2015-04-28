@@ -3,9 +3,9 @@ import os
 
 # constants
 DB_NAME = 'tournament'
-TABLE_QUERIES = '../sql/tournament.sql'
-APLAYERS_QUERIES = '../sql/register_aplayers.sql'
-JPLAYERS_QUERIES = '../sql/register_jplayers.sql'
+TABLE_QUERIES = 'sql/tournament.sql'
+APLAYERS_QUERIES = 'sql/register_aplayers.sql'
+JPLAYERS_QUERIES = 'sql/register_jplayers.sql'
 
 
 def create_db(db_name = DB_NAME):

@@ -4,7 +4,8 @@
 #
 
 import psycopg2
-from support.setupdb import connect_db
+from setupdb import connect_db
+from simmatches import pair_players, get_name, get_players, get_wins, get_rounds
 
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
@@ -49,7 +50,7 @@ def registerPlayer(name):
     """
     connection = connect()
     cursor = connection.cursor()
-    query = "insert into players (name) values ('{}')".format(name)
+    query = "insert into players (name) values ('{}')".format(name.replace("'","''"))
     cursor.execute(query)
     connection.commit()
     connection.close()
@@ -70,7 +71,14 @@ def playerStandings():
     """
     connection = connect()
     cursor = connection.cursor()
-    query = ''
+    query = 'select * from players'
+    cursor.execute(query)
+    players = cursor.fetchall()
+    standings = []
+    for player in players:
+        player += (get_wins(player[0]),get_rounds())
+        standings.append(player)
+    return standings
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -79,7 +87,13 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-
+    connection = connect()
+    cursor = connection.cursor()
+    query = """insert into matches (winner, loser)
+                  values ({},{})""".format(winner, loser)
+    cursor.execute(query)
+    connection.commit()
+    connection.close()
 
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
@@ -96,5 +110,7 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-
-
+    pairs = pair_players(get_players())
+    full_pairs = [(pair[0], get_name(pair[0]), pair[1], get_name(pair[1])) 
+                  for pair in pairs]
+    return full_pairs
