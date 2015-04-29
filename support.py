@@ -129,7 +129,7 @@ def pair_players(players):
             alt_pairs = [pair for pair in player_pairs
                          if pair[0] in alternatives or
                          pair[1] in alternatives][::-1]
-            # check if player can play against
+            # check if player can play against other opponent
             for alt_pair in alt_pairs:
                 if not (alt_pair[0] in opponents or
                         player in get_opponents(alt_pair[1]) or
