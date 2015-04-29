@@ -5,7 +5,7 @@
 
 import psycopg2
 from setupdb import connect_db
-from simmatches import *
+from support import *
 
 
 def connect():
@@ -55,6 +55,11 @@ def registerPlayer(name):
     """
     connection = connect()
     cursor = connection.cursor()
+    # bye is a reserved name so prevent this name
+    if name == 'bye':
+        name = 'player named bye'
+    # replace any single apostrophes with doubled
+    # single apostrophes and insert name into query
     query = """insert into players (name)
                values ('{}')""".format(name.replace("'", "''"))
     cursor.execute(query)

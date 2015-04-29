@@ -4,7 +4,7 @@ import sys
 
 from math import ceil, log
 from operator import itemgetter
-from setupdb import connect_db
+from setupdb import connect_db, init_tournament
 from tournament import *
 
 
@@ -14,7 +14,30 @@ def get_players():
     cursor = connection.cursor()
     query = 'select id from players'
     cursor.execute(query)
-    return [player[0] for player in cursor]
+    players = [player[0] for player in cursor]
+    if is_odd(len(players)):
+        players = create_bye(players)
+    return players
+
+
+def create_bye(players):
+    """Create a bye player named 'bye'.
+    A match against the bye player will always be won.
+    """
+    connection = connect_db()
+    cursor = connection.cursor()
+    query = """insert into players (name)
+               values ('bye')"""
+    cursor.execute(query)
+    connection.commit()
+    connection.close()
+    return get_players()
+
+
+def is_odd(num):
+    """Check if a number is odd"""
+    return num & 0x1
+
 
 def get_name(player):
     """Get a player name"""
@@ -85,13 +108,38 @@ def pair_players(players):
         return []
     ranked_players = rank_players(players)
     player_pairs = []
-    while len(ranked_players) > 0:
+    while len(ranked_players) > 1:
         player = ranked_players.pop(0)
         opponents = get_opponents(player)
-        for idx, opponent in enumerate(ranked_players):
-            if not opponent in opponents:
-                opponent = ranked_players.pop(idx)
-                break
+        try:
+            opponent = next(x for x in ranked_players if x not in opponents)
+        except StopIteration, exp:
+            # we ran into a problem as the last match already played
+            # we therefore exchange two pairs
+            opponent = None
+            # create the unhappy pair
+            unhappy_pair = [player, ranked_players[0]]
+            # get all alternatives as opponent
+            alternatives = rank_players([alt for alt in rank_players(players)
+                                         if player not in
+                                         get_opponents(alt) and
+                                         player != alt])[::-1]
+
+            # get all pairings of the alternatives
+            alt_pairs = [pair for pair in player_pairs
+                         if pair[0] in alternatives or
+                         pair[1] in alternatives][::-1]
+            # check if player can play against
+            for alt_pair in alt_pairs:
+                if not (alt_pair[0] in opponents or
+                        player in get_opponents(alt_pair[1]) or
+                        unhappy_pair[1] in get_opponents(alt_pair[0])):
+                    player_pairs.remove(alt_pair)
+                    player_pairs.append((alt_pair[0], unhappy_pair[1]))
+                    opponent = alt_pair[1]
+                    ranked_players.append(opponent)
+                    break
+        ranked_players.remove(opponent)
         player_pairs.append((player, opponent))
     return player_pairs
 
@@ -103,8 +151,8 @@ def rank_players(players):
     """
     # Add values for wins and opponent match wins to the player for sorting
     ranked_players = [[player, get_wins(player), get_opponent_wins(player)]
-                       for player in players]
-    ranked_players.sort(key=itemgetter(1,2), reverse=True)
+                      for player in players]
+    ranked_players.sort(key=itemgetter(1, 2), reverse=True)
     # return ids only as the other info was only needed for sorting
     return [player[0] for player in ranked_players]
 
@@ -120,6 +168,10 @@ def get_opponent_wins(player):
 
 def play_match(player, opponent):
     """Play a match. Return updated player and opponent"""
+    if get_name(player) == 'bye':
+        return opponent
+    if get_name(opponent) == 'bye':
+        return player
     outcome = random.choice([0, 1])
     if outcome:
         reportMatch(player, opponent)
@@ -128,8 +180,23 @@ def play_match(player, opponent):
     return opponent
 
 
-if __name__ == '__main__':
-    players = get_players()
+def play_round(players):
+    """Play a round of a swiss tournament"""
     pairs = pair_players(players)
     for pair in pairs:
         play_match(*pair)
+
+
+def play_tournament():
+    """Play a swiss tournanemt"""
+    init_tournament()
+    players = get_players()
+    for idx in range(max_rounds()):
+        play_round(players)
+        print "Round", idx + 1, "played"
+    print "Tournament played"
+
+
+if __name__ == '__main__':
+    for idx in range(20):
+        play_tournament()

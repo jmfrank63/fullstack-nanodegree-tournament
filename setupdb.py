@@ -6,6 +6,7 @@ DB_NAME = 'tournament'
 TABLE_QUERIES = 'sql/tournament.sql'
 APLAYERS_QUERIES = 'sql/register_aplayers.sql'
 JPLAYERS_QUERIES = 'sql/register_jplayers.sql'
+MAKE_UNEVEN = 'sql/uneven_aplayers.sql'
 
 
 def create_db(db_name=DB_NAME):
@@ -65,7 +66,7 @@ def execute_db(connection, queries):
 
 
 # open the sql commands file
-if __name__ == '__main__':
+def init_tournament():
     # create a database deleting any previous versions and connect to it
     create_db(DB_NAME)
     conn = connect_db(DB_NAME)
@@ -77,5 +78,11 @@ if __name__ == '__main__':
     execute_db(conn, parse_queries(APLAYERS_QUERIES))
     execute_db(conn, parse_queries(JPLAYERS_QUERIES))
 
+    # make number of players uneven
+    execute_db(conn, parse_queries(MAKE_UNEVEN))
+
     # close the connection
     conn.close()
+
+if __name__ == '__main__':
+    init_tournament()
