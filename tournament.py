@@ -5,11 +5,13 @@
 
 import psycopg2
 from setupdb import connect_db
-from simmatches import pair_players, get_name, get_players, get_wins, get_rounds
+from simmatches import *
+
 
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
     return connect_db()
+
 
 def deleteMatches():
     """Remove all the match records from the database."""
@@ -20,6 +22,7 @@ def deleteMatches():
     connection.commit()
     connection.close()
 
+
 def deletePlayers():
     """Remove all the player records from the database."""
     connection = connect()
@@ -28,6 +31,7 @@ def deletePlayers():
     cursor.execute(query)
     connection.commit()
     connection.close()
+
 
 def countPlayers():
     """Returns the number of players currently registered."""
@@ -38,6 +42,7 @@ def countPlayers():
     num = cursor.fetchall()[0][0]
     connection.close()
     return num
+
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
@@ -50,7 +55,8 @@ def registerPlayer(name):
     """
     connection = connect()
     cursor = connection.cursor()
-    query = "insert into players (name) values ('{}')".format(name.replace("'","''"))
+    query = """insert into players (name)
+               values ('{}')""".format(name.replace("'", "''"))
     cursor.execute(query)
     connection.commit()
     connection.close()
@@ -59,8 +65,8 @@ def registerPlayer(name):
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
 
-    The first entry in the list should be the player in first place, or a player
-    tied for first place if there is currently a tie.
+    The first entry in the list should be the player in first place,
+    or a player tied for first place if there is currently a tie.
 
     Returns:
       A list of tuples, each of which contains (id, name, wins, matches):
@@ -76,9 +82,10 @@ def playerStandings():
     players = cursor.fetchall()
     standings = []
     for player in players:
-        player += (get_wins(player[0]),get_rounds())
+        player += (get_wins(player[0]), get_rounds())
         standings.append(player)
     return standings
+
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -94,6 +101,7 @@ def reportMatch(winner, loser):
     cursor.execute(query)
     connection.commit()
     connection.close()
+
 
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
@@ -111,6 +119,6 @@ def swissPairings():
         name2: the second player's name
     """
     pairs = pair_players(get_players())
-    full_pairs = [(pair[0], get_name(pair[0]), pair[1], get_name(pair[1])) 
+    full_pairs = [(pair[0], get_name(pair[0]), pair[1], get_name(pair[1]))
                   for pair in pairs]
     return full_pairs

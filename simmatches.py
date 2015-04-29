@@ -1,5 +1,6 @@
 import random
-import os.path, sys
+import os.path
+import sys
 
 from math import ceil, log
 from operator import itemgetter
@@ -17,7 +18,8 @@ def get_players():
     for player in cursor:
         players.append(player[0])
     return players
-    
+
+
 def get_name(player):
     """Get a player name"""
     connection = connect_db()
@@ -25,7 +27,8 @@ def get_name(player):
     query = 'select name from players where id = {}'.format(player)
     cursor.execute(query)
     return cursor.fetchall()[0]
-    
+
+
 def get_wins(player):
     """Calculate the number of wins from the stored matches"""
     connection = connect_db()
@@ -40,6 +43,7 @@ def get_wins(player):
         return 0
     else:
         return wins[0][0]
+
 
 def get_rounds():
     """Calculate the number of rounds played from the stored matches"""
@@ -56,9 +60,11 @@ def get_rounds():
     else:
         return rounds[0][0]
 
+
 def max_rounds():
     """Get maximum number of rounds to play"""
     return int(ceil(log(len(get_players()), 2)))
+
 
 def get_opponents(player):
     """Gets a list of opponents the player has played"""
@@ -72,6 +78,7 @@ def get_opponents(player):
     cursor.execute(query)
     opponents = [opp[0] for opp in cursor]
     return opponents
+
 
 def pair_players(players):
     """Pair players according to their wins avoiding double matches"""
@@ -90,6 +97,7 @@ def pair_players(players):
         player_pairs.append((player, opponent[0]))
     return player_pairs
 
+
 def play_match(player, opponent):
     """Play a match. Return updated player and opponent"""
     outcome = random.choice([0, 1])
@@ -98,6 +106,7 @@ def play_match(player, opponent):
         return player
     reportMatch(opponent, player)
     return opponent
+
 
 if __name__ == '__main__':
     players = get_players()

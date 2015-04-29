@@ -8,7 +8,7 @@ APLAYERS_QUERIES = 'sql/register_aplayers.sql'
 JPLAYERS_QUERIES = 'sql/register_jplayers.sql'
 
 
-def create_db(db_name = DB_NAME):
+def create_db(db_name=DB_NAME):
     ''' Create a database deleting any previous versions
     Return a connection to the database
     '''
@@ -33,13 +33,15 @@ def create_db(db_name = DB_NAME):
     conn.commit()
     conn.close()
 
-def connect_db(db_name = DB_NAME):
+
+def connect_db(db_name=DB_NAME):
     """Connects to a database and creates that database if it doesn't exist"""
     try:
         conn = psycopg2.connect('dbname={}'.format(db_name))
     except Exception, exp:
         raise exp
     return conn
+
 
 def parse_queries(filename):
     """Parse a file with sql queries and return a list of queries"""
@@ -52,6 +54,7 @@ def parse_queries(filename):
                 query_buffer += line.strip('\r').strip('\n')
 
     return query_buffer.split(';')[:-1]
+
 
 def execute_db(connection, queries):
     '''Fill a database with a table structure'''
@@ -69,7 +72,7 @@ if __name__ == '__main__':
 
     # create the table structure
     execute_db(conn, parse_queries(TABLE_QUERIES))
-    
+
     # fill database with players
     execute_db(conn, parse_queries(APLAYERS_QUERIES))
     execute_db(conn, parse_queries(JPLAYERS_QUERIES))
