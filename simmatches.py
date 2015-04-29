@@ -9,16 +9,12 @@ from tournament import *
 
 
 def get_players():
-    """Get players from the database """
+    """Get players id from the database """
     connection = connect_db()
     cursor = connection.cursor()
     query = 'select id from players'
     cursor.execute(query)
-    players = []
-    for player in cursor:
-        players.append(player[0])
-    return players
-
+    return [player[0] for player in cursor]
 
 def get_name(player):
     """Get a player name"""
@@ -81,21 +77,45 @@ def get_opponents(player):
 
 
 def pair_players(players):
-    """Pair players according to their wins avoiding double matches"""
+    """Pair players according to their wins avoiding double matches
+    This is already a swiss pairing but only for id without name
+    """
+    # don't return any more pairs if maximum number of rounds is already played
     if get_rounds() > max_rounds:
         return []
-    player_wins = [[player, get_wins(player)] for player in players]
-    player_wins.sort(key=itemgetter(1), reverse=True)
+    ranked_players = rank_players(players)
     player_pairs = []
-    while len(player_wins) > 0:
-        player = player_wins.pop(0)[0]
+    while len(ranked_players) > 0:
+        player = ranked_players.pop(0)
         opponents = get_opponents(player)
-        for idx, opponent in enumerate(player_wins):
-            if not opponent[0] in opponents:
-                opponent = player_wins.pop(idx)
+        for idx, opponent in enumerate(ranked_players):
+            if not opponent in opponents:
+                opponent = ranked_players.pop(idx)
                 break
-        player_pairs.append((player, opponent[0]))
+        player_pairs.append((player, opponent))
     return player_pairs
+
+
+def rank_players(players):
+    """Sort the players according to their current ranking
+    Break tie by using the wins of the opponents they
+    have won against
+    """
+    # Add values for wins and opponent match wins to the player for sorting
+    ranked_players = [[player, get_wins(player), get_opponent_wins(player)]
+                       for player in players]
+    ranked_players.sort(key=itemgetter(1,2), reverse=True)
+    # return ids only as the other info was only needed for sorting
+    return [player[0] for player in ranked_players]
+
+
+def get_opponent_wins(player):
+    """Returns the sum of all opponent wins"""
+    opponents = get_opponents(player)
+    wins = 0
+    for opponent in opponents:
+        wins += get_wins(opponent)
+    return wins
 
 
 def play_match(player, opponent):
