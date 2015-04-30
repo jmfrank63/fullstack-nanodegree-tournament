@@ -43,8 +43,8 @@ def get_name(player):
     """Get a player name"""
     connection = connect_db()
     cursor = connection.cursor()
-    query = 'select name from players where id = {}'.format(player)
-    cursor.execute(query)
+    query = "select name from players where id = %s"
+    cursor.execute(query, (player,))
     return cursor.fetchall()[0]
 
 
@@ -53,10 +53,10 @@ def get_wins(player):
     connection = connect_db()
     cursor = connection.cursor()
     query = """select distinct count(winner) from matches
-                 where winner = {}
+                 where winner = %s
                  group by winner
-                 order by count desc limit 1""".format(player)
-    cursor.execute(query)
+                 order by count desc limit 1"""
+    cursor.execute(query, (player,))
     wins = cursor.fetchall()
     if not wins:
         return 0
@@ -90,11 +90,11 @@ def get_opponents(player):
     connection = connect_db()
     cursor = connection.cursor()
     query = """select loser as opponent from matches
-                 where winner = {0}
+                 where winner = %s
                  union
                select winner from matches
-                 where loser = {0}""".format(player)
-    cursor.execute(query)
+                 where loser = %s"""
+    cursor.execute(query, (player, player))
     opponents = [opp[0] for opp in cursor]
     return opponents
 
@@ -198,5 +198,5 @@ def play_tournament():
 
 
 if __name__ == '__main__':
-    for idx in range(20):
+    for idx in range(2):
         play_tournament()

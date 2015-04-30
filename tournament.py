@@ -61,8 +61,8 @@ def registerPlayer(name):
     # replace any single apostrophes with doubled
     # single apostrophes and insert name into query
     query = """insert into players (name)
-               values ('{}')""".format(name.replace("'", "''"))
-    cursor.execute(query)
+               values (%s)"""
+    cursor.execute(query, (name, ))
     connection.commit()
     connection.close()
 
@@ -102,8 +102,8 @@ def reportMatch(winner, loser):
     connection = connect()
     cursor = connection.cursor()
     query = """insert into matches (winner, loser)
-                  values ({},{})""".format(winner, loser)
-    cursor.execute(query)
+                  values (%s, %s)"""
+    cursor.execute(query, (winner, loser))
     connection.commit()
     connection.close()
 
