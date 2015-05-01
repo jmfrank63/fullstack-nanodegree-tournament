@@ -103,3 +103,19 @@ out how to change the quoting, but I found the AsIs method which served
 the purpose.
 I used the .format method only with the connect function. This command
 does not accept sql thus no injection can take place.
+
+The separation of the create tables from the database is not optimal. I must
+admit this. But I would have to rewrite the way I created the database and
+I do not have written a testsuite. So I will risk breaking things and I am
+under heavy time pressure at the moment. 4th of May is deadline for this
+project, but what is even more important I will have to finish P5 and P6 of
+the front end developer to finish my first nanodegree by 18th of May.
+So have my appologies for not fixing this. I did however take your
+recommondation on the list comprehension.
+As I mentioned: No testsuite so refacturing can break things.
+I want to say thank you for the hint with bleach. I will definitely use it
+on the next project.
+
+Cheers
+
+Johannes

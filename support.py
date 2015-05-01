@@ -160,10 +160,11 @@ def rank_players(players):
 def get_opponent_wins(player):
     """Returns the sum of all opponent wins"""
     opponents = get_opponents(player)
-    wins = 0
-    for opponent in opponents:
-        wins += get_wins(opponent)
-    return wins
+    return sum([get_wins(opponent) for opponent in opponents])
+    # wins = 0
+    # for opponent in opponents:
+    #     wins += get_wins(opponent)
+    # return wins
 
 
 def play_match(player, opponent):
